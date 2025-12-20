@@ -8,7 +8,10 @@ interface MicrosoftLoginButtonProps {
 const MicrosoftLoginButton: React.FC<MicrosoftLoginButtonProps> = ({ className = '' }) => {
   const handleLogin = () => {
     // Redirect to backend endpoint which handles the OAuth flow
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+    let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+    if (!apiUrl.endsWith('/api')) {
+      apiUrl += '/api';
+    }
     window.location.href = `${apiUrl}/auth/microsoft`;
   };
 
