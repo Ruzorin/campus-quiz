@@ -8,6 +8,13 @@
       "when": 1766260320346,
       "tag": "0000_chunky_archangel",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1766261365968,
+      "tag": "0001_add_microsoft_auth_columns",
+      "breakpoints": true
     }
   ]
 }

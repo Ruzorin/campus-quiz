@@ -1,85 +1,42 @@
-import React, { useState } from 'react';
-import { useMsal } from "@azure/msal-react";
-import { loginRequest, msalConfig } from "../authConfig";
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
 import { useAuthStore } from '../context/useAuthStore';
 import { School, ArrowRight, Loader } from 'lucide-react';
+import MicrosoftLoginButton from '../components/MicrosoftLoginButton';
 
 // Design Improvement: Glassmorphism and Gradients
 export const LoginPage: React.FC = () => {
-  const { instance } = useMsal();
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = async () => {
-    setLoading(true);
-    setError('');
+  // Handle callback from backend redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const username = params.get('username');
+    const errorMsg = params.get('error');
 
-    // DEV MODE: Check if we are using the placeholder ID
-    // If so, simulate a login so the user can continue developing without Azure access
-    const clientId = msalConfig.auth.clientId;
-    if (clientId === "YOUR_CLIENT_ID_HERE") {
-      console.warn("Using Mock Login because ClientID is missing");
-      setTimeout(async () => {
-        try {
-          // Simulate Microsoft Response
-          const mockName = "Batuhan Öğrenci";
-          const mockEmail = "batuhan.ogrenci@emu.edu.tr";
-
-          // Send to backend
-          const payload = {
-            email: mockEmail,
-            name: mockName,
-          };
-
-          const res = await api.post('/auth/microsoft', payload);
-          login(res.data.token, res.data.user);
-          navigate('/');
-        } catch (e: any) {
-          setError(e.message || 'Mock Login failed');
-        } finally {
-          setLoading(false);
-        }
-      }, 1500); // Fake network delay
-      return;
-    }
-
-    // REAL MSAL LOGIN
-    try {
-      const loginResponse = await instance.loginPopup(loginRequest);
-
-      // Validation: Domain check
-      if (!loginResponse.account || !loginResponse.account.username.endsWith('@emu.edu.tr')) {
-        setError('Access Restricted: Only @emu.edu.tr accounts are allowed.');
-        await instance.logoutPopup();
-        setLoading(false); // Ensure loading is reset on error
-        return;
-      }
-
-      // Backend Sync
-      const payload = {
-        email: loginResponse.account.username,
-        name: loginResponse.account.name || 'Unknown User',
-        // In real world, send the accessToken and verify on backend
-        // accessToken: loginResponse.accessToken 
+    if (errorMsg) {
+      setError('Authentication failed. Please try again.');
+    } else if (token) {
+      setLoading(true);
+      // Simulate profile data since we just have username in query param
+      // ideally backend sends full profile or user fetches it with token
+      const mockUser = {
+        id: 0, // Placeholder
+        username: decodeURIComponent(username || 'User'),
+        email: 'user@emu.edu.tr',
+        xp: 0,
+        level: 1,
+        streak: 0
       };
 
-      const res = await api.post('/auth/microsoft', payload);
-
-      login(res.data.token, res.data.user);
+      login(token, mockUser as any);
       navigate('/');
-
-    } catch (e: any) {
-      console.error(e);
-      setError(e.message || 'Login failed');
-      setLoading(false); // Ensure loading is reset on error
     }
-  };
-
-  const isMockMode = msalConfig.auth.clientId === "YOUR_CLIENT_ID_HERE";
+  }, [navigate, login]);
 
   return (
     <div className="min-h-screen flex text-gray-900 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 font-sans overflow-hidden relative">
@@ -110,26 +67,14 @@ export const LoginPage: React.FC = () => {
               </div>
             )}
 
-            <button
-              onClick={handleLogin}
-              disabled={loading}
-              className="group w-full relative flex items-center justify-center py-4 px-6 border border-transparent font-medium rounded-xl text-white bg-[#2F2F2F] hover:bg-black transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 overflow-hidden"
-            >
-              {loading ? (
-                <Loader className="animate-spin h-5 w-5" />
-              ) : (
-                <div className="flex items-center">
-                  <svg className="h-5 w-5 mr-3" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 0H10.9701V10.9701H0V0Z" fill="#F25022" />
-                    <path d="M12.0299 0H23V10.9701H12.0299V0Z" fill="#7FBA00" />
-                    <path d="M0 12.0299H10.9701V23H0V12.0299Z" fill="#00A4EF" />
-                    <path d="M12.0299 12.0299H23V23H12.0299V12.0299Z" fill="#FFB900" />
-                  </svg>
-                  <span className="text-lg">Sign in with Microsoft</span>
-                  <ArrowRight className="ml-2 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
-                </div>
-              )}
-            </button>
+            {loading ? (
+              <div className="flex justify-center p-4">
+                <Loader className="animate-spin h-8 w-8 text-indigo-600" />
+              </div>
+            ) : (
+              <MicrosoftLoginButton className="transform transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg" />
+            )}
+
             <p className="text-xs text-gray-400 mt-4">
               Restricted to <span className="font-semibold text-gray-500">@emu.edu.tr</span> accounts only.
             </p>

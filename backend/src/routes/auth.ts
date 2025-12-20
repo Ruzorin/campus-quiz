@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { microsoftLogin } from '../controllers/authController';
+import { microsoftLogin, microsoftCallback } from '../controllers/authController';
 
 export const authRoutes = Router();
 
-authRoutes.post('/microsoft', microsoftLogin);
+authRoutes.get('/microsoft', microsoftLogin);
+authRoutes.get('/microsoft/callback', microsoftCallback);

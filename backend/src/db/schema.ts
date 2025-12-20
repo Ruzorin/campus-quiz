@@ -11,7 +11,9 @@ export const users = sqliteTable('users', {
   level: integer('level').default(1),
   streak: integer('streak').default(0),
   last_active_at: integer('last_active_at', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`),
-  created_at: integer('created_at', { mode: 'timestamp' }).default(sql`(CURRENT_TIMESTAMP)`),
+  microsoft_id: text('microsoft_id').unique(),
+  avatar_url: text('avatar_url'),
+  created_at: integer('created_at', { mode: 'timestamp' }).default(sql`(strftime('%s', 'now'))`),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
