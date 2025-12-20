@@ -3,9 +3,18 @@ import { School, ArrowRight, Loader } from 'lucide-react';
 import MicrosoftLoginButton from '../components/MicrosoftLoginButton';
 import { useAuthStore } from '../context/useAuthStore';
 
+import { useNavigate } from 'react-router-dom';
+
 // Design Improvement: Glassmorphism and Gradients
 export const LoginPage: React.FC = () => {
-  const { isLoading, error } = useAuthStore();
+  const { isLoading, error, isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen flex text-gray-900 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 font-sans overflow-hidden relative">
