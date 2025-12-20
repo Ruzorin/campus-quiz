@@ -114,7 +114,7 @@ export const microsoftCallback = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.error('Microsoft Login Error:', error);
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=auth_failed`);
+    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/?error=auth_failed`);
   }
 };
 
