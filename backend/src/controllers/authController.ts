@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { db } from '../db';
 import { users } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import { z } from 'zod';
 
 // Simple in-memory session or basic logic for now since we don't have full JWT setup requested explicitly yet,
@@ -71,12 +71,14 @@ export const microsoftCallback = async (req: Request, res: Response) => {
     const email = profile.userPrincipalName || profile.mail; // Microsoft usually uses userPrincipalName or mail
 
     // Check if user exists by microsoft_id OR email (linking accounts)
-    let user = await db.query.users.findFirst({
-      where: (users, { or, eq }) => or(
+    const existingUsers = await db.select().from(users).where(
+      or(
         eq(users.microsoft_id, profile.id),
         eq(users.email, email)
       )
-    });
+    ).limit(1);
+
+    let user = existingUsers[0];
 
     if (!user) {
       // Create new user
