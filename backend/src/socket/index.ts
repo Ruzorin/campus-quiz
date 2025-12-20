@@ -81,7 +81,7 @@ export const initializeSocket = (httpServer: HttpServer) => {
         const setTerms = await db.select().from(terms).where(eq(terms.set_id, room.setId));
 
         // Transform to questions
-        const questions = setTerms.map(t => ({
+        const questions = setTerms.map((t: any) => ({
           id: t.id,
           term: t.term,
           correctAnswer: t.definition,

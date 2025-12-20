@@ -92,7 +92,7 @@ router.get('/smart-review', async (req, res) => {
     const formattedData = {
       id: 'smart-review',
       title: 'Smart Review Session',
-      terms: weakTerms.map(t => ({
+      terms: weakTerms.map((t: any) => ({
         id: t.termId,
         term: t.term,
         definition: t.definition,

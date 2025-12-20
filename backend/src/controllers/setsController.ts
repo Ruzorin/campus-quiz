@@ -198,7 +198,7 @@ export const getSmartReviewSet = async (req: Request, res: Response) => {
       return res.json({ terms: [] });
     }
 
-    const termsIds = weakProgress.map(p => p.term_id);
+    const termsIds = weakProgress.map((p: any) => p.term_id);
 
     const weakTerms = await db.query.terms.findMany({
       where: inArray(terms.id, termsIds)
