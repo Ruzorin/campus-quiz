@@ -60,10 +60,15 @@ export const getSets = async (req: Request, res: Response) => {
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
     const sets = await db.query.studySets.findMany({
-      where: eq(studySets.owner_id, userId),
+      where: or(
+        eq(studySets.owner_id, userId),
+        eq(studySets.is_public, true)
+      ),
       with: {
         terms: true,
-      }
+        owner: true,
+      },
+      limit: 100 // Limit to avoid overwhelming dashboard initially
     });
 
     res.json(sets);
