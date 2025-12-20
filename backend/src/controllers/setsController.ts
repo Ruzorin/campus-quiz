@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-
-import { eq, and, lt, like, or } from 'drizzle-orm';
+import { db } from '../db';
+import { eq, and, lt, like, or, inArray } from 'drizzle-orm';
 
 import { studySets, terms, userProgress } from '../db/schema';
 import { z } from 'zod';
@@ -23,14 +23,6 @@ export const createSet = async (req: Request, res: Response) => {
 
     const data = createSetSchema.parse(req.body);
 
-    // Transaction to insert set and terms
-    // Drizzle transaction support varies by driver, but standard way:
-    // We will do sequential inserts for simplicity if transaction syntax is complex for this setup
-    // Using `db.transaction` if available for mysql2 driver in Drizzle
-
-    // Simple implementation without explicit transaction block for now to avoid complexity in this step
-    // unless necessary.
-
     const [result] = await db.insert(studySets).values({
       owner_id: userId,
       title: data.title,
@@ -38,7 +30,6 @@ export const createSet = async (req: Request, res: Response) => {
       is_public: data.is_public || false,
     });
 
-    // 'insertId' is available on result in mysql2
     const setId = (result as any).insertId;
 
     if (data.terms.length > 0) {
@@ -68,11 +59,10 @@ export const getSets = async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-    // Get user's sets
     const sets = await db.query.studySets.findMany({
       where: eq(studySets.owner_id, userId),
       with: {
-        terms: true, // Eager load terms? Maybe just count for list view.
+        terms: true,
       }
     });
 
@@ -98,10 +88,6 @@ export const getSetById = async (req: Request, res: Response) => {
 
     if (!set) return res.status(404).json({ message: 'Set not found' });
 
-    // Check visibility logic (public or owner)
-    // For now, simple check
-    // if (!set.is_public && set.owner_id !== req.user?.id) ...
-
     res.json(set);
   } catch (error) {
     console.error(error);
@@ -115,8 +101,6 @@ export const searchSets = async (req: Request, res: Response) => {
 
     if (!query) return res.status(400).json({ message: 'Query is required' });
 
-    // Search for PUBLIC sets that match the title or description
-    // Using simple LIKE %query% for SQLite
     const results = await db.query.studySets.findMany({
       where: and(
         eq(studySets.is_public, true),
@@ -129,7 +113,7 @@ export const searchSets = async (req: Request, res: Response) => {
         owner: {
           columns: { username: true }
         },
-        terms: true // Just to show count
+        terms: true
       },
       limit: 20
     });
@@ -159,7 +143,6 @@ export const copySet = async (req: Request, res: Response) => {
     const originalSetId = parseInt(req.params.id);
     if (isNaN(originalSetId)) return res.status(400).json({ message: 'Invalid ID' });
 
-    // 1. Fetch Original Set
     const originalSet = await db.query.studySets.findFirst({
       where: eq(studySets.id, originalSetId),
       with: { terms: true }
@@ -167,22 +150,18 @@ export const copySet = async (req: Request, res: Response) => {
 
     if (!originalSet) return res.status(404).json({ message: 'Set not found' });
     if (!originalSet.is_public && originalSet.owner_id !== userId) {
-      // Prevent copying private sets of others
       return res.status(403).json({ message: 'Cannot copy private set' });
     }
 
-    // 2. Create Clone
-    // Drizzle Insert
     const [result] = await db.insert(studySets).values({
       owner_id: userId,
       title: `${originalSet.title} (Copy)`,
       description: originalSet.description,
-      is_public: false // Copied sets private by default
+      is_public: false
     });
 
     const newSetId = (result as any).insertId;
 
-    // 3. Clone Terms
     if (originalSet.terms.length > 0) {
       await db.insert(terms).values(
         originalSet.terms.map((t: any) => ({
@@ -195,6 +174,37 @@ export const copySet = async (req: Request, res: Response) => {
     }
 
     res.status(201).json({ message: 'Set cloned successfully', setId: newSetId });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const getSmartReviewSet = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const weakProgress = await db.query.userProgress.findMany({
+      where: and(
+        eq(userProgress.user_id, userId),
+        lt(userProgress.mastery_level, 5)
+      ),
+      limit: 20
+    });
+
+    if (weakProgress.length === 0) {
+      return res.json({ terms: [] });
+    }
+
+    const termsIds = weakProgress.map(p => p.term_id);
+
+    const weakTerms = await db.query.terms.findMany({
+      where: inArray(terms.id, termsIds)
+    });
+
+    res.json({ terms: weakTerms });
 
   } catch (error) {
     console.error(error);

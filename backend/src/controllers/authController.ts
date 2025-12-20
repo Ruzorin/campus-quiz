@@ -50,7 +50,7 @@ export const microsoftLogin = async (req: Request, res: Response) => {
 
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ message: 'Validation failed', errors: (error as z.ZodError).errors });
+      res.status(400).json({ message: 'Validation failed', errors: (error as any).errors });
     } else {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });

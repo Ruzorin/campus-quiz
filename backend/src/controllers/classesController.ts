@@ -3,7 +3,7 @@ import { db } from '../db';
 import { classes, classMembers, assignments, terms, userProgress, users } from '../db/schema';
 import { eq, and, inArray, sql, desc, asc } from 'drizzle-orm';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid'; // User might need to install uuid or I can use random string manually
+import { v4 as uuidv4 } from 'uuid';
 
 // Helper for random code
 const generateJoinCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -159,4 +159,47 @@ export const getUserClasses = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
+};
+
+export const getAssignments = async (req: Request, res: Response) => {
+  try {
+    const classId = parseInt(req.params.classId);
+    if (isNaN(classId)) return res.status(400).json({ message: 'Invalid ID' });
+
+    const classAssignments = await db.query.assignments.findMany({
+      where: eq(assignments.class_id, classId),
+      with: {
+        set: true
+      },
+      orderBy: desc(assignments.due_date)
+    });
+
+    res.json(classAssignments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const createAssignment = async (req: Request, res: Response) => {
+  try {
+    const classId = parseInt(req.params.classId);
+    if (isNaN(classId)) return res.status(400).json({ message: 'Invalid ID' });
+    const { set_id, due_date } = req.body;
+
+    await db.insert(assignments).values({
+      class_id: classId,
+      set_id,
+      due_date: new Date(due_date)
+    });
+
+    res.status(201).json({ message: 'Assignment created' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const getAssignmentReport = async (req: Request, res: Response) => {
+  res.json({ message: "Report logic placeholder" });
 };
