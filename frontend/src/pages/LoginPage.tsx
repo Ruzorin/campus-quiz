@@ -1,42 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../context/useAuthStore';
+import React from 'react';
 import { School, ArrowRight, Loader } from 'lucide-react';
 import MicrosoftLoginButton from '../components/MicrosoftLoginButton';
+import { useAuthStore } from '../context/useAuthStore';
 
 // Design Improvement: Glassmorphism and Gradients
 export const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { login } = useAuthStore();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  // Handle callback from backend redirect
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    const username = params.get('username');
-    const errorMsg = params.get('error');
-
-    if (errorMsg) {
-      setError('Authentication failed. Please try again.');
-    } else if (token) {
-      setLoading(true);
-      // Simulate profile data since we just have username in query param
-      // ideally backend sends full profile or user fetches it with token
-      const mockUser = {
-        id: 0, // Placeholder
-        username: decodeURIComponent(username || 'User'),
-        email: 'user@emu.edu.tr',
-        xp: 0,
-        level: 1,
-        streak: 0
-      };
-
-      login(token, mockUser as any);
-      navigate('/');
-    }
-  }, [navigate, login]);
+  const { isLoading, error } = useAuthStore();
 
   return (
     <div className="min-h-screen flex text-gray-900 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 font-sans overflow-hidden relative">
@@ -67,7 +36,7 @@ export const LoginPage: React.FC = () => {
               </div>
             )}
 
-            {loading ? (
+            {isLoading ? (
               <div className="flex justify-center p-4">
                 <Loader className="animate-spin h-8 w-8 text-indigo-600" />
               </div>
