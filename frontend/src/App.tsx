@@ -38,6 +38,40 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 function App() {
+  const { login } = useAuthStore();
+
+  // Global Auth Handler for OAuth Redirects
+  React.useEffect(() => {
+    // Only run if we have query params (optimization)
+    if (!window.location.search) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const username = params.get('username');
+    const errorMsg = params.get('error');
+
+    if (token && username) {
+      console.log("OAuth Token Detected. Logging in...");
+      // Decode and Login
+      const mockUser = {
+        id: 0,
+        username: decodeURIComponent(username),
+        email: 'user@emu.edu.tr',
+        xp: 0,
+        level: 1,
+        streak: 0
+      };
+
+      login(token, mockUser as any);
+
+      // Clean URL but keep the user on the home page (dashboard)
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (errorMsg) {
+      console.error("Auth Error:", errorMsg);
+      // alert("Authentication failed. Please try again."); 
+    }
+  }, [login]);
+
   return (
     <MsalProvider instance={msalInstance}>
       <SocketProvider>
