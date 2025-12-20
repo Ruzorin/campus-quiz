@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { db } from '../db';
+
 import { eq, and, lt, like, or } from 'drizzle-orm';
-import { db } from '../db';
+
 import { studySets, terms, userProgress } from '../db/schema';
 import { z } from 'zod';
 
@@ -55,7 +55,7 @@ export const createSet = async (req: Request, res: Response) => {
     res.status(201).json({ message: 'Set created', setId });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ message: 'Validation failed', errors: (error as z.ZodError).errors });
+      res.status(400).json({ message: 'Validation failed', errors: (error as any).errors });
     } else {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });
@@ -134,7 +134,7 @@ export const searchSets = async (req: Request, res: Response) => {
       limit: 20
     });
 
-    const mappedResults = results.map(s => ({
+    const mappedResults = results.map((s: any) => ({
       id: s.id,
       title: s.title,
       description: s.description,
@@ -185,7 +185,7 @@ export const copySet = async (req: Request, res: Response) => {
     // 3. Clone Terms
     if (originalSet.terms.length > 0) {
       await db.insert(terms).values(
-        originalSet.terms.map(t => ({
+        originalSet.terms.map((t: any) => ({
           set_id: newSetId,
           term: t.term,
           definition: t.definition,

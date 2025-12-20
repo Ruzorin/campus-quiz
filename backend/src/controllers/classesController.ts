@@ -42,7 +42,7 @@ export const createClass = async (req: Request, res: Response) => {
     res.status(201).json({ message: 'Class created', classId, joinCode });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ message: 'Validation failed', errors: (error as z.ZodError).errors });
+      res.status(400).json({ message: 'Validation failed', errors: (error as any).errors });
     } else {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });
@@ -86,7 +86,7 @@ export const joinClass = async (req: Request, res: Response) => {
     res.status(200).json({ message: 'Joined class successfully', class: targetClass });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ message: 'Validation failed', errors: (error as z.ZodError).errors });
+      res.status(400).json({ message: 'Validation failed', errors: (error as any).errors });
     } else {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });
@@ -148,7 +148,7 @@ export const getUserClasses = async (req: Request, res: Response) => {
       }
     });
 
-    const userClasses = memberships.map(m => ({
+    const userClasses = memberships.map((m: any) => ({
       ...m.class,
       role: m.role,
       joined_at: m.joined_at
