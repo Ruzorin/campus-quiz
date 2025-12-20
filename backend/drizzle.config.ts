@@ -15,7 +15,8 @@ export default defineConfig({
   dialect: 'sqlite',
   dbCredentials: {
     url: process.env.DATABASE_URL || 'file:game.db',
-    token: process.env.TURSO_AUTH_TOKEN,
+    authToken: process.env.TURSO_AUTH_TOKEN,
   },
 });
+// Force Render Redeploy - Attempt 2
 // Force Render Redeploy
