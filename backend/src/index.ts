@@ -7,8 +7,10 @@ import { setRoutes } from './routes/sets';
 import { authRoutes } from './routes/auth';
 import { classRoutes } from './routes/classes';
 import { progressRoutes } from './routes/progress';
-import { userRoutes } from './routes/users'; // Ensure this is imported
+import { progressRoutes } from './routes/progress';
+import { userRoutes } from './routes/users';
 import leaderboardRoutes from './routes/leaderboard';
+import adminRoutes from './routes/admin';
 
 dotenv.config();
 
@@ -32,6 +34,7 @@ app.use('/api/classes', classRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Listen on httpServer, not app
 httpServer.listen(PORT, () => {
