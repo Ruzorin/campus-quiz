@@ -7,7 +7,6 @@ import { setRoutes } from './routes/sets';
 import { authRoutes } from './routes/auth';
 import { classRoutes } from './routes/classes';
 import { progressRoutes } from './routes/progress';
-import { progressRoutes } from './routes/progress';
 import { userRoutes } from './routes/users';
 import leaderboardRoutes from './routes/leaderboard';
 import adminRoutes from './routes/admin';
