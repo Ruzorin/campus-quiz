@@ -36,7 +36,7 @@ export const ProfilePage: React.FC = () => {
             </span>
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">{user?.name || user?.username}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{user?.username}</h1>
         <p className="text-gray-500 flex items-center gap-1">
           <GraduationCap size={16} /> Level {stats?.level || 1} Student
         </p>
