@@ -60,6 +60,7 @@ router.get('/set/:setId', async (req, res) => {
 
     res.json(scores);
 
+  } catch (error) {
     res.status(500).json({ error: 'Failed to fetch set leaderboard' });
   }
 });
