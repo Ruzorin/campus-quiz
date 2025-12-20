@@ -38,17 +38,18 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 function App() {
-  const { login } = useAuthStore();
+  const { login, setError } = useAuthStore();
+  // Initialize 'processing' if we see a token in the URL to prevent ProtectedRoute from redirecting immediately
+  const [isProcessingAuth, setIsProcessingAuth] = React.useState(() => {
+    return !!new URLSearchParams(window.location.search).get('token');
+  });
 
   // Global Auth Handler for OAuth Redirects
   React.useEffect(() => {
-    // Only run if we have query params (optimization)
-    if (!window.location.search) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    const username = params.get('username');
-    const errorMsg = params.get('error');
+    const searchParams = new URLSearchParams(window.location.search);
+    const token = searchParams.get('token');
+    const username = searchParams.get('username');
+    const errorMsg = searchParams.get('error');
 
     if (token && username) {
       console.log("OAuth Token Detected. Logging in...");
@@ -68,9 +69,20 @@ function App() {
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (errorMsg) {
       console.error("Auth Error:", errorMsg);
-      // alert("Authentication failed. Please try again."); 
+      setError("Authentication failed. Please try again.");
     }
-  }, [login]);
+
+    // Auth processing done
+    setIsProcessingAuth(false);
+  }, [login, setError]);
+
+  if (isProcessingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
     <MsalProvider instance={msalInstance}>
