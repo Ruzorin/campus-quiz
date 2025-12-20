@@ -110,7 +110,7 @@ export const microsoftCallback = async (req: Request, res: Response) => {
     // const token = generateJwt(user.id); // If we had real JWT
     const token = 'mock_jwt_token_' + user.id; // Using existing mock scheme for consistency unless changed
 
-    res.redirect(`${frontendUrl}/login?token=${token}&username=${encodeURIComponent(user.username)}`);
+    res.redirect(`${frontendUrl}/?token=${token}&username=${encodeURIComponent(user.username)}`);
 
   } catch (error) {
     console.error('Microsoft Login Error:', error);
