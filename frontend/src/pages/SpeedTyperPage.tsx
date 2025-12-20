@@ -36,7 +36,7 @@ export const SpeedTyperPage: React.FC = () => {
   const [level, setLevel] = useState(1);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number>(0);
   const lastSpawnTime = useRef<number>(0);
   const spawnRate = useRef(2000); // Start spawning every 2s
 

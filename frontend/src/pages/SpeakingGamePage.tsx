@@ -65,7 +65,7 @@ export const SpeakingGamePage: React.FC = () => {
   const [history, setHistory] = useState<string[]>([]); // Debug history
 
   const recognitionRef = useRef<any>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<any>(null);
 
   useEffect(() => {
     fetchSet();
