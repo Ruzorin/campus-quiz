@@ -71,7 +71,10 @@ export const ProfilePage: React.FC = () => {
 
       {/* Account Actions */}
       <div className="glass-card p-2">
-        <button className="w-full flex items-center p-4 hover:bg-gray-50 rounded-xl transition-colors text-left gap-4 text-gray-700 font-medium">
+        <button
+          onClick={() => alert("Editing profile is coming soon!")}
+          className="w-full flex items-center p-4 hover:bg-gray-50 rounded-xl transition-colors text-left gap-4 text-gray-700 font-medium"
+        >
           <User size={20} className="text-gray-400" />
           Edit Profile
         </button>

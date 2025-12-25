@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../context/useAuthStore';
-import { Home, Layers, PlusCircle, User, LogOut, School, Flame, Search, Settings } from 'lucide-react';
+import { Home, Layers, PlusCircle, User, LogOut, School, Flame, Gamepad2, Settings } from 'lucide-react';
 import { useMsal } from "@azure/msal-react";
 
 export const Navbar: React.FC = () => {
@@ -38,8 +38,8 @@ export const Navbar: React.FC = () => {
                 <Link to="/classes" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/classes') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
                   Classes
                 </Link>
-                <Link to="/discovery" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/discovery') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
-                  Discovery
+                <Link to="/classes" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/classes') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
+                  Play
                 </Link>
                 <Link to="/create-set" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/create-set') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
                   Create
