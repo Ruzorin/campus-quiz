@@ -48,7 +48,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
     const userId = (req as any).user.id;
-    const { username } = req.body;
+    const { username, avatar_url } = req.body;
 
     if (!username || username.trim().length < 3) {
       return res.status(400).json({ error: 'Username must be at least 3 characters' });
@@ -61,7 +61,7 @@ router.put('/profile', authenticateToken, async (req, res) => {
     }
 
     await db.update(users)
-      .set({ username })
+      .set({ username, avatar_url })
       .where(eq(users.id, userId));
 
     res.json({ success: true, message: 'Profile updated' });
