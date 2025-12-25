@@ -6,6 +6,8 @@ import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
+router.get('/ping', (req, res) => res.send('pong'));
+
 // POST /api/debug/setup
 // Promotes user to teacher and creates TEST01 class
 router.post('/setup', authenticateToken, async (req, res) => {

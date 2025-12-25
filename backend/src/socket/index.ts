@@ -65,16 +65,43 @@ export const initializeSocket = (httpServer: HttpServer) => {
         // Fetch terms for the set
         const setTerms = await db.select().from(terms).where(eq(terms.set_id, room.setId));
 
-        // Transform to questions
-        const questions = setTerms.map((t: any) => ({
-          id: t.id,
-          term: t.term,
-          correctAnswer: t.definition,
-          options: [t.definition, "Wrong 1", "Wrong 2", "Wrong 3"] // TODO: Better distractors
-        }));
+        // Helper to shuffle array
+        const shuffle = (array: any[]) => {
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        };
+
+        // Transform to questions with REAL distractors
+        const questions = setTerms.map((t: any) => {
+          // Get 3 random wrong answers from other terms
+          const otherTerms = setTerms.filter(term => term.id !== t.id);
+          const distractors = shuffle(otherTerms)
+            .slice(0, 3)
+            .map(term => term.definition);
+
+          // Pad with generic wrong answers if not enough terms in set
+          while (distractors.length < 3) {
+            distractors.push(`Random Wrong Answer ${distractors.length + 1}`);
+          }
+
+          const options = shuffle([t.definition, ...distractors]);
+
+          return {
+            id: t.id,
+            term: t.term,
+            correctAnswer: t.definition,
+            options
+          };
+        });
+
+        // Limit to 10 questions for a quick duel, or all if less
+        const selectedQuestions = shuffle(questions).slice(0, 10);
 
         room.status = 'playing';
-        io.to(classId).emit('game_started', { questions });
+        io.to(classId).emit('game_started', { questions: selectedQuestions });
         console.log(`Game started for Class ${classId}`);
       }
     });
