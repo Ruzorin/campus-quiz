@@ -6,6 +6,7 @@ interface User {
   username: string;
   email: string;
   avatar_url?: string;
+  role?: 'student' | 'teacher' | 'admin';
 }
 
 interface AuthState {
@@ -60,6 +61,7 @@ export const useAuthStore = create<AuthState>((set) => ({
           username: user.username,
           email: user.email,
           avatar_url: user.avatar_url,
+          role: user.role,
           // Add other props if extended User interface allows
         },
         isAuthenticated: true

@@ -20,6 +20,7 @@ import { ClassesPage } from './pages/ClassesPage';
 import { ClassDetailPage } from './pages/ClassDetailPage';
 import { DuelGamePage } from './pages/DuelGamePage';
 import { PlayPage } from './pages/PlayPage';
+import { TeacherDashboardPage } from './pages/TeacherDashboardPage';
 
 import { useAuthStore } from './context/useAuthStore';
 
@@ -203,6 +204,11 @@ function App() {
                 <Route path="/smart-review" element={
                   <ProtectedRoute>
                     <SmartReviewPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher" element={
+                  <ProtectedRoute>
+                    <TeacherDashboardPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/sets" element={

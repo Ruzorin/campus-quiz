@@ -71,6 +71,14 @@ export const Navbar: React.FC = () => {
               >
                 <Settings size={20} />
               </Link>
+              {user?.role === 'teacher' && (
+                <Link
+                  to="/teacher"
+                  className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium hover:bg-indigo-200 transition-colors"
+                >
+                  Dashboard
+                </Link>
+              )}
             </div>
           </div>
         </div>

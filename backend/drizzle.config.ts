@@ -14,7 +14,9 @@ export default defineConfig({
   out: './drizzle',
   dialect: 'sqlite',
   dbCredentials: {
-    url: process.env.DATABASE_URL?.replace("libsql://", "https://") || 'file:game.db',
-    token: process.env.TURSO_AUTH_TOKEN!,
+    url: (process.env.DATABASE_URL && (process.env.DATABASE_URL.includes("libsql") || process.env.DATABASE_URL.includes("file")))
+      ? process.env.DATABASE_URL.replace("libsql://", "https://")
+      : 'file:./game.db',
+    ...(process.env.TURSO_AUTH_TOKEN ? { token: process.env.TURSO_AUTH_TOKEN } : {}),
   },
 });
