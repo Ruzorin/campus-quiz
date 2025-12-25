@@ -11,6 +11,7 @@ import { userRoutes } from './routes/users';
 import leaderboardRoutes from './routes/leaderboard';
 import adminRoutes from './routes/admin';
 import { teacherRoutes } from './routes/teacher';
+import { gameRoutes } from './routes/game';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use('/api/progress', progressRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/teacher', teacherRoutes);
+app.use('/api/game', gameRoutes);
 
 // Listen on httpServer, not app
 httpServer.listen(PORT, () => {

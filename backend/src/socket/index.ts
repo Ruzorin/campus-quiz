@@ -3,22 +3,7 @@ import { terms } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { Server, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
-
-interface GameRoom {
-  id: string; // class_id
-  hostId: number;
-  setId?: number; // Added setId
-  players: {
-    id: number;
-    username: string;
-    score: number;
-    progress: number; // 0-100%
-  }[];
-  status: 'waiting' | 'playing' | 'finished';
-  currentQuestionIndex: number;
-}
-
-const rooms: Record<string, GameRoom> = {};
+import { rooms } from './roomStore';
 
 export const initializeSocket = (httpServer: HttpServer) => {
   const io = new Server(httpServer, {
