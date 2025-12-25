@@ -19,6 +19,7 @@ import { SpeakingGamePage } from './pages/SpeakingGamePage';
 import { ClassesPage } from './pages/ClassesPage';
 import { ClassDetailPage } from './pages/ClassDetailPage';
 import { DuelGamePage } from './pages/DuelGamePage';
+import { PlayPage } from './pages/PlayPage';
 
 import { useAuthStore } from './context/useAuthStore';
 
@@ -177,7 +178,7 @@ function App() {
 
                 <Route path="/play" element={
                   <ProtectedRoute>
-                    <ClassesPage />
+                    <PlayPage />
                   </ProtectedRoute>
                 } />
 
