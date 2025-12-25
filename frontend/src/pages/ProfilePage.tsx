@@ -7,27 +7,39 @@ import api from '../services/api';
 export const ProfilePage: React.FC = () => {
   const { user, logout } = useAuthStore();
   const { instance } = useMsal();
-  const [stats, setStats] = useState<any>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newUsername, setNewUsername] = useState('');
+  const [editError, setEditError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await api.get('/users/profile');
-        setStats(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchProfile();
-  }, []);
+    if (user?.username) {
+      setNewUsername(user.username);
+    }
+  }, [user]);
 
-  const handleLogout = () => {
-    logout();
-    instance.logoutPopup();
+  // ... (existing useEffect)
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEditError('');
+    setIsSaving(true);
+
+    try {
+      await api.put('/users/profile', { username: newUsername });
+      setIsEditing(false);
+      // Ideally update global user state here or reload window
+      window.location.reload();
+    } catch (err: any) {
+      setEditError(err.response?.data?.error || 'Failed to update profile');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 pb-24">
+    <div className="max-w-2xl mx-auto px-4 py-8 pb-24 relative">
+      {/* ... (existing header and stats) */}
       <div className="flex flex-col items-center mb-8">
         <div className="h-24 w-24 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 p-1 mb-4 shadow-xl">
           <div className="h-full w-full rounded-full bg-white flex items-center justify-center">
@@ -42,7 +54,6 @@ export const ProfilePage: React.FC = () => {
         </p>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="glass-card p-4 text-center">
           <div className="flex justify-center text-orange-500 mb-2"><Flame size={24} /></div>
@@ -72,7 +83,7 @@ export const ProfilePage: React.FC = () => {
       {/* Account Actions */}
       <div className="glass-card p-2">
         <button
-          onClick={() => alert("Editing profile is coming soon!")}
+          onClick={() => setIsEditing(true)}
           className="w-full flex items-center p-4 hover:bg-gray-50 rounded-xl transition-colors text-left gap-4 text-gray-700 font-medium"
         >
           <User size={20} className="text-gray-400" />
@@ -87,6 +98,47 @@ export const ProfilePage: React.FC = () => {
           Log Out
         </button>
       </div>
+
+      {/* Edit Modal */}
+      {isEditing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in zoom-in-95 duration-200">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Edit Profile</h2>
+            {editError && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">{editError}</div>}
+
+            <form onSubmit={handleSaveProfile}>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                <input
+                  type="text"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  className="w-full border-gray-300 rounded-xl shadow-sm p-3 border focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                  minLength={3}
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-xl font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-medium shadow-lg shadow-indigo-200 transition-all disabled:opacity-50"
+                >
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
