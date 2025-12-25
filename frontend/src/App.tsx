@@ -175,6 +175,12 @@ function App() {
                   </ProtectedRoute>
                 } />
 
+                <Route path="/play" element={
+                  <ProtectedRoute>
+                    <ClassesPage />
+                  </ProtectedRoute>
+                } />
+
                 <Route path="/classes/:id" element={
                   <ProtectedRoute>
                     <ClassDetailPage />

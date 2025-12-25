@@ -38,7 +38,7 @@ export const Navbar: React.FC = () => {
                 <Link to="/classes" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/classes') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
                   Classes
                 </Link>
-                <Link to="/classes" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/classes') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
+                <Link to="/play" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/play') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
                   Play
                 </Link>
                 <Link to="/create-set" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/create-set') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
@@ -100,7 +100,7 @@ export const Navbar: React.FC = () => {
             <Layers size={24} />
             <span className="text-[10px] font-medium">Classes</span>
           </Link>
-          <Link to="/classes" className={`flex flex-col items-center gap-1 ${isActive('/classes') ? 'text-indigo-600' : 'text-gray-400'}`}>
+          <Link to="/play" className={`flex flex-col items-center gap-1 ${isActive('/play') ? 'text-indigo-600' : 'text-gray-400'}`}>
             <Gamepad2 size={24} />
             <span className="text-[10px] font-medium">Play</span>
           </Link>
