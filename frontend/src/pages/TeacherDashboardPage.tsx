@@ -185,21 +185,101 @@ export const TeacherDashboardPage: React.FC = () => {
           <div className="max-w-4xl mx-auto animate-in fade-in duration-300">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Assignments</h2>
-              <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 shadow-md flex items-center gap-2">
+              <button
+                onClick={() => setShowAssignmentModal(true)}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 shadow-md flex items-center gap-2"
+              >
                 <Plus size={18} /> New Assignment
               </button>
             </div>
-            <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
-              <p className="text-gray-500">Assignment management interface coming soon.</p>
+
+            {/* Assignment List (Placeholder for now, could fetch real active ones) */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
+              <div className="flex flex-col items-center justify-center text-gray-500">
+                <FileText size={48} className="mb-4 text-gray-300" />
+                <p>No active assignments found.</p>
+                <p className="text-sm mt-2">Create one to get started!</p>
+              </div>
             </div>
           </div>
         )}
 
+        {/* ... Reports Tab ... */}
         {activeTab === 'reports' && (
           <div className="max-w-4xl mx-auto animate-in fade-in duration-300">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Class Reports</h2>
             <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
               <p className="text-gray-500">Detailed reporting interface coming soon.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Create Assignment Modal */}
+        {showAssignmentModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all scale-100">
+              <h2 className="text-xl font-bold mb-4 text-gray-900">Create Assignment</h2>
+              {assignmentError && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-xl text-sm">{assignmentError}</div>}
+
+              <form onSubmit={handleCreateAssignment}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Select Class</label>
+                  <select
+                    className="w-full border-gray-300 rounded-xl shadow-sm p-3 border focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                    value={newAssignment.classId}
+                    onChange={(e) => setNewAssignment({ ...newAssignment, classId: e.target.value })}
+                    required
+                  >
+                    <option value="">Choose a class...</option>
+                    {myClasses.map((cls: any) => (
+                      <option key={cls.id} value={cls.id}>{cls.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Select Study Set</label>
+                  <select
+                    className="w-full border-gray-300 rounded-xl shadow-sm p-3 border focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                    value={newAssignment.setId}
+                    onChange={(e) => setNewAssignment({ ...newAssignment, setId: e.target.value })}
+                    required
+                  >
+                    <option value="">Choose a set...</option>
+                    {mySets.map((set: any) => (
+                      <option key={set.id} value={set.id}>{set.title}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+                  <input
+                    type="date"
+                    className="w-full border-gray-300 rounded-xl shadow-sm p-3 border focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                    value={newAssignment.dueDate}
+                    onChange={(e) => setNewAssignment({ ...newAssignment, dueDate: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowAssignmentModal(false)}
+                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-xl font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-medium shadow-lg shadow-indigo-200 transition-all disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Assigning...' : 'Assign'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

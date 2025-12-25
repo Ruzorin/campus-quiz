@@ -50,12 +50,36 @@ router.get('/dashboard', async (req, res) => {
 
     res.json({
       activeClasses: classesCount?.count || 0,
-      totalStudents: 0, // Placeholder for now to avoid complex query complexity in this step
+      totalStudents: 0,
       activeAssignments: assignmentsCount?.count || 0,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch dashboard stats' });
+  }
+});
+
+// GET /sets - Fetch sets created by the teacher
+router.get('/sets', async (req, res) => {
+  try {
+    const teacherId = (req as any).user.id;
+    const teacherSets = await db.select().from(studySets).where(eq(studySets.owner_id, teacherId)).orderBy(desc(studySets.created_at));
+    res.json(teacherSets);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch sets' });
+  }
+});
+
+// GET /classes - Fetch classes owned by the teacher
+router.get('/classes', async (req, res) => {
+  try {
+    const teacherId = (req as any).user.id;
+    const teacherClasses = await db.select().from(classes).where(eq(classes.owner_id, teacherId)).orderBy(desc(classes.created_at));
+    res.json(teacherClasses);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch classes' });
   }
 });
 
