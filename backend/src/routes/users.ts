@@ -28,6 +28,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     res.json({
+      id: user.id,
       username: user.username,
       email: user.email,
       xp: user.xp,

@@ -76,6 +76,12 @@ function App() {
     setIsProcessingAuth(false);
   }, [login, setError]);
 
+  // Restore session on mount
+  const { checkAuth } = useAuthStore();
+  React.useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   if (isProcessingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">

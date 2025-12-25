@@ -38,9 +38,36 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   checkAuth: async () => {
-    // In a real app, verify token with backend /me endpoint
-    // For now, simple check or trusting stored data if we had a persistence layer for user obj
-    // We can add a /me endpoint later.
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      // Use the token to fetch the user's profile
+      const response = await api.get('/users/profile');
+      // Update store with user data
+      // Backend returns: { username, email, xp, level, streak, setsCreated, termsMastered, joinedAt }
+      // We need to map this to our User interface if it differs, or update User interface
+      // Our User interface only has id, username, email. We should populate it.
+      // Wait, endpoint uses req.user.userId from token. We need the ID in the frontend user object too.
+      // The profile response might not include 'id' explicitly if not added. I should check users.ts again.
+      // Assuming profile endpoint is the best source.
+
+      const user = response.data;
+      set({
+        user: {
+          id: user.id, // Ensure backend sends ID
+          username: user.username,
+          email: user.email,
+          // Add other props if extended User interface allows
+        },
+        isAuthenticated: true
+      });
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      // If unauthorized, clear auth state
+      localStorage.removeItem('token');
+      set({ token: null, user: null, isAuthenticated: false, error: null });
+    }
   },
 
   setLoading: (isLoading: boolean) => set({ isLoading }),
