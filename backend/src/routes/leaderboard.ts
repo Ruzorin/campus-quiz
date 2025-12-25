@@ -89,14 +89,18 @@ router.get('/class/:classId', async (req, res) => {
     // Let's use `sql` to be generic if table object isn't imported.
     // But I should import it. Let's assume `classMembers` is exported from schema.
 
-    const leaderboard = await db.all(sql`
-      SELECT u.username, u.xp, u.level, u.streak 
-      FROM class_members cm
-      JOIN users u ON cm.user_id = u.id
-      WHERE cm.class_id = ${classId}
-      ORDER BY u.xp DESC
-      LIMIT 50
-    `);
+    // Drizzle ORM Query Builder (Correct usage)
+    const leaderboard = await db.select({
+      username: users.username,
+      xp: users.xp,
+      level: users.level,
+      streak: users.streak,
+    })
+      .from(classMembers)
+      .innerJoin(users, eq(classMembers.user_id, users.id))
+      .where(eq(classMembers.class_id, parseInt(classId)))
+      .orderBy(desc(users.xp))
+      .limit(50);
 
     res.json(leaderboard);
   } catch (error) {
