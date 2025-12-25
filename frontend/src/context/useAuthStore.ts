@@ -58,6 +58,7 @@ export const useAuthStore = create<AuthState>((set) => ({
           id: user.id, // Ensure backend sends ID
           username: user.username,
           email: user.email,
+          avatar_url: user.avatar_url,
           // Add other props if extended User interface allows
         },
         isAuthenticated: true

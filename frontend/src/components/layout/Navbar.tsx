@@ -100,9 +100,9 @@ export const Navbar: React.FC = () => {
             <Layers size={24} />
             <span className="text-[10px] font-medium">Classes</span>
           </Link>
-          <Link to="/discovery" className={`flex flex-col items-center gap-1 ${isActive('/discovery') ? 'text-indigo-600' : 'text-gray-400'}`}>
-            <Search size={24} />
-            <span className="text-[10px] font-medium">Search</span>
+          <Link to="/classes" className={`flex flex-col items-center gap-1 ${isActive('/classes') ? 'text-indigo-600' : 'text-gray-400'}`}>
+            <Gamepad2 size={24} />
+            <span className="text-[10px] font-medium">Play</span>
           </Link>
 
           {/* Floating Action Button for Create */}
