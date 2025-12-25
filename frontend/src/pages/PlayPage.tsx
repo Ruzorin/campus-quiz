@@ -63,6 +63,21 @@ export const PlayPage: React.FC = () => {
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Enter a game code to join a team challenge, or jump back into your class activities.
         </p>
+
+        {/* Temporary Setup Button for User Testing */}
+        <button
+          onClick={async () => {
+            if (!confirm("Bu işlem hesabınızı 'Öğretmen' yapar ve test verisi oluşturur. Devam?")) return;
+            try {
+              await api.post('/debug/setup');
+              alert("Hesap güncellendi! Sayfa yenileniyor...");
+              window.location.reload();
+            } catch (e) { alert("Hata oluştu."); }
+          }}
+          className="mt-4 text-xs text-gray-400 hover:text-indigo-600 underline"
+        >
+          (Test İçin): Hesabımı Öğretmen Yap & Test Verisi Yükle
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
