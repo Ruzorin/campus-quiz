@@ -9,7 +9,7 @@ const router = express.Router();
 // Get User Profile Stats
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
-    const userId = (req as any).user.userId;
+    const userId = (req as any).user.id; // Corrected from userId to id
 
     const user = await db.select().from(users).where(eq(users.id, userId)).get();
 
