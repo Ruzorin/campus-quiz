@@ -53,9 +53,17 @@ function App() {
 
     if (token && username) {
       console.log("OAuth Token Detected. Logging in...");
+
+      // Extract ID from mock token if possible (Resilience against backend lag)
+      let userId = 0;
+      if (token.startsWith('mock_jwt_token_')) {
+        const extractedId = parseInt(token.replace('mock_jwt_token_', ''), 10);
+        if (!isNaN(extractedId)) userId = extractedId;
+      }
+
       // Decode and Login
       const mockUser = {
-        id: 0,
+        id: userId, // Use extracted ID! 
         username: decodeURIComponent(username),
         email: 'user@emu.edu.tr',
         xp: 0,

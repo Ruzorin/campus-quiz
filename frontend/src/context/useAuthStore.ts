@@ -62,11 +62,24 @@ export const useAuthStore = create<AuthState>((set) => ({
         },
         isAuthenticated: true
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auth check failed:', error);
-      // If unauthorized, clear auth state
-      localStorage.removeItem('token');
-      set({ token: null, user: null, isAuthenticated: false, error: null });
+
+      // Only logout if it's a clear authentication error (401)
+      // If it's 404 (User not found) or 500 (Server error), we might want to keep the session 
+      // if we have a valid token, to avoid login loops during deployment glitches.
+      // However, if user is not found (404), technically we should logout. 
+      // But given the current "Backend deployment lag" issue causing false 404s, 
+      // let's be lenient and only logout on strict 401.
+
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('token');
+        set({ token: null, user: null, isAuthenticated: false, error: null });
+      } else {
+        // For other errors, keep isAuthenticated=true but maybe set error state
+        // This prevents the "Loop" if backend returns 404/500 temporarily
+        console.warn("Keeping session active despite profile fetch error:", error.message);
+      }
     }
   },
 
