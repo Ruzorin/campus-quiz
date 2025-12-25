@@ -19,9 +19,57 @@ export const TeacherDashboardPage: React.FC = () => {
   // Mock data for UI development until backend routes are fully populated
   // In a real flow, we would fetch these from /api/teacher/assignments etc.
 
+  // Modal & Form State
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+  const [myClasses, setMyClasses] = useState<any[]>([]);
+  const [mySets, setMySets] = useState<any[]>([]);
+  const [newAssignment, setNewAssignment] = useState({ classId: '', setId: '', dueDate: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [assignmentError, setAssignmentError] = useState('');
+
   useEffect(() => {
     fetchStats();
   }, []);
+
+  useEffect(() => {
+    if (showAssignmentModal) {
+      fetchDropdownData();
+    }
+  }, [showAssignmentModal]);
+
+  const fetchDropdownData = async () => {
+    try {
+      const [classesRes, setsRes] = await Promise.all([
+        api.get('/teacher/classes'),
+        api.get('/teacher/sets')
+      ]);
+      setMyClasses(classesRes.data);
+      setMySets(setsRes.data);
+    } catch (err) {
+      console.error("Failed to load dropdowns", err);
+    }
+  };
+
+  const handleCreateAssignment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setAssignmentError('');
+
+    try {
+      await api.post('/teacher/assignments', { // Updated to match likely route
+        class_id: parseInt(newAssignment.classId),
+        set_id: parseInt(newAssignment.setId),
+        due_date: newAssignment.dueDate
+      });
+      setShowAssignmentModal(false);
+      setNewAssignment({ classId: '', setId: '', dueDate: '' });
+      fetchStats(); // Refresh stats
+    } catch (err: any) {
+      setAssignmentError(err.response?.data?.error || 'Failed to create assignment');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const fetchStats = async () => {
     try {
