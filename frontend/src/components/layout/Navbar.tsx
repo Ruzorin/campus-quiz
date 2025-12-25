@@ -124,6 +124,16 @@ export const Navbar: React.FC = () => {
             <User size={24} />
             <span className="text-[10px] font-medium">Profile</span>
           </Link>
+
+          {user?.role === 'teacher' && (
+            <Link to="/teacher" className={`flex flex-col items-center gap-1 ${isActive('/teacher') ? 'text-indigo-600' : 'text-gray-400'}`}>
+              <div className="relative">
+                <School size={24} />
+                <span className="absolute -top-1 -right-1 block h-2 w-2 rounded-full ring-1 ring-white bg-red-500"></span>
+              </div>
+              <span className="text-[10px] font-medium">Dash</span>
+            </Link>
+          )}
         </div>
       </div>
 
